@@ -19,7 +19,7 @@ public abstract class AbstractStateManager extends GameComponent implements Runn
 	public Game canvas;
 	
 	// For loading a new state
-	public AbstractTransitionState transitionState;
+	public TransitionState transitionState;
 	public boolean load;
 		
 	public AbstractStateManager(Game canvas) {
