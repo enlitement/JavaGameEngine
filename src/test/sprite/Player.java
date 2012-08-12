@@ -35,8 +35,6 @@ public class Player extends Sprite implements Paintable, Movable, Shootable {
 
 	@Override
 	public void move() {
-		// TODO: Make rotating square class
-
 		// Determine the angle of the player
 		if (turnLeft)
 			angle += ROTATESPEED;
@@ -129,8 +127,6 @@ public class Player extends Sprite implements Paintable, Movable, Shootable {
 	}
 
 	public void update() {
-		// System.out.println("Player update");
-		System.out.println("Turn left in player=" + turnLeft);
 		counter++;
 		/*
 		 * if (fire && counter > MIN_FIRE_TIME) { shoot(); counter = 0; }

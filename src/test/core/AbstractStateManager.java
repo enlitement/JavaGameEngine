@@ -4,7 +4,6 @@ import java.awt.Graphics;
 import java.util.Stack;
 
 import test.gameInterfaces.Paintable;
-import test.gameStates.AbstractTransitionState;
 import test.gameStates.State;
 import test.gameStates.TransitionState;
 
@@ -33,7 +32,7 @@ public abstract class AbstractStateManager extends GameComponent implements Runn
 	 * @param state
 	 */
 	public void addTransitionState(State state) {
-		transitionState = new TransitionState(this, state);
+		transitionState = new TransitionState((StateManager)this, state);
 		states.add(transitionState);
 	}
 
@@ -43,9 +42,11 @@ public abstract class AbstractStateManager extends GameComponent implements Runn
 	
 	public void loadingState() {
 		getTransitionState().update();
-		load = getTransitionState().loadComplete();
-		if(!load)
+		if(getTransitionState().isDone()) {
 			transitionState = null;
+			System.out.println("Done loading");
+		}
+			
 	}
 	
 	public void updateStates() {

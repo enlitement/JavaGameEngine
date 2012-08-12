@@ -24,7 +24,7 @@ public class PlayState extends AbstractPlayState {
 
 		//initSwing();
 		initEntities();
-		//initResources();
+		initResources();
 
 		// collisionManager = new CollisionManager(this);
 
@@ -57,7 +57,7 @@ public class PlayState extends AbstractPlayState {
 		// Key Pressed
 		
 		if (keyboard.keyDown(KeyEvent.VK_A)) {
-			System.out.println("A");
+			//System.out.println("A");
 			//player.turnLeft = true;
 			boolean banger = true;
 			player.setLeft(banger);
@@ -116,6 +116,12 @@ public class PlayState extends AbstractPlayState {
 		 */
 
 	}
+	
+	private boolean load = false;
+	
+	public void load() {
+		stateManager.getResources().loading.set(true);
+	}
 
 	@Override
 	public void initResources() {
@@ -123,8 +129,8 @@ public class PlayState extends AbstractPlayState {
 		stateManager.getResources().addResource("block.png", player);
 		stateManager.getResources().addResource("grassSandLeft.png", player);
 		stateManager.getResources().addResource("Heart.png", player);
-		stateManager.getResources().addResource("House.png", player);
-		stateManager.getResources().addResource("House.png", player);
+		//stateManager.getResources().addResource("House.png", player);
+		//stateManager.getResources().addResource("House.png", player);
 		stateManager.getResources().addResource("House.png", player);
 		stateManager.getResources().addResource("Item.png", player);
 		stateManager.getResources().addResource("Limestone.png", player);
@@ -137,6 +143,8 @@ public class PlayState extends AbstractPlayState {
 		stateManager.getResources().addResource("bigAssFile.png", player);
 		stateManager.getResources().addResource("Brick.png", player);
 		stateManager.getResources().addResource("HPpot.png", player);
+		load();
+		
 	}
 
 }

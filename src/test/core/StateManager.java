@@ -19,7 +19,7 @@ public class StateManager extends AbstractStateManager implements Runnable, Pain
 		super(panel);
 		states = new Stack<State>();
 		load = false;
-		states.add(new PlayState(this));
+		addTransitionState(new PlayState(this));
 	}
 	
 	/**
@@ -29,8 +29,11 @@ public class StateManager extends AbstractStateManager implements Runnable, Pain
 	public void run() {
 		if(!load)
 			updateStates();
-		if(load)
+		if(load) {
+			
 			loadingState();
+			
+		}
 		sleep(1);
 	}
 

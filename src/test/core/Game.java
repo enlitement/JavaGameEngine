@@ -19,7 +19,7 @@ public class Game extends Canvas implements Runnable {
 	// Graphics strategy
 	public BufferStrategy strategy;
 	
-	// Game components
+	// Main Game components
 	// Manages the painting of the game
 	public GraphicsManager graphicsManager;
 	// Manages all the State objects for the game
@@ -133,7 +133,8 @@ public class Game extends Canvas implements Runnable {
 				try {
 					// System.out.println("Sleep time:"+((lastLoopTime -
 					// System.nanoTime()) / 1000000 + 10));
-					Thread.sleep((lastLoopTime - System.nanoTime()) / 1000000 + 10);
+					//Thread.sleep((lastLoopTime - System.nanoTime()) / 1000000 + 10);
+					Thread.sleep(30);
 				} catch (Exception ex) {
 					System.out.println(ex);
 				}

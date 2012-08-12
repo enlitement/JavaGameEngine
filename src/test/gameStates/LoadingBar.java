@@ -3,19 +3,22 @@ package test.gameStates;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import test.core.Game;
 import test.gameInterfaces.Paintable;
-
-public class AbstractLoadingBar implements Paintable {
+public class LoadingBar implements Paintable {
 
 	public AbstractTransitionState state;
 	public int barWidth, barHeight, barX, barY;
+	public final int arcW = 3, arcH = 3;
 	public Color barColor;
 
-	public AbstractLoadingBar(AbstractTransitionState state, int barWidth,
+	public LoadingBar(AbstractTransitionState state, int barWidth,
 			int barHeight, Color barColor) {
 		this.state = state;
-		barX = (state.stateManager.canvas.getWidth() / 2) - (barWidth / 2);
-		barY = (state.stateManager.canvas.getHeight() / 2) - (barHeight / 2);
+		this.barWidth = barWidth;
+		this.barHeight = barHeight;
+		barX = (Game.WIDTH / 2) - (barWidth / 2);
+		barY = (Game.HEIGHT / 2) - (barHeight / 2);
 		this.barColor = barColor;
 	}
 
