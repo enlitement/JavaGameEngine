@@ -8,7 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import test.core.StateManager;
+import unused.StateManager;
 
 public class PauseState extends State {
 	

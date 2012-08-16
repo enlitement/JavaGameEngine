@@ -1,6 +1,6 @@
 package test.gameInterfaces;
 
-import test.sprite.Bullet;
+import test.asteriods.Bullet;
 
 public interface Shootable {
 	public int MAX_BULLETS = 5;

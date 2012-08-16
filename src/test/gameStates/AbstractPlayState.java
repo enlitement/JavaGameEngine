@@ -1,7 +1,7 @@
 package test.gameStates;
 
-import test.core.KeyboardInput;
-import test.core.StateManager;
+import test.core.input.KeyboardInput;
+import unused.StateManager;
 
 public abstract class AbstractPlayState extends State{
 	public boolean pause;

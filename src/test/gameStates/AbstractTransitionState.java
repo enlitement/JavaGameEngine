@@ -1,12 +1,15 @@
 package test.gameStates;
 
 import java.awt.Graphics;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import test.core.StateManager;
+import unused.StateManager;
 
 public abstract class AbstractTransitionState extends State {
 	public State transState;
 	public LoadingBar loadingBar;
+	public AtomicInteger numLoaded;
+	public AtomicInteger numTotal;
 	
 	public AbstractTransitionState(StateManager stateManager, State state) {
 		super(stateManager);
@@ -17,14 +20,6 @@ public abstract class AbstractTransitionState extends State {
 	
 	public double getPercent() {
 		return stateManager.getResources().getPercentComplete();
-	}
-	
-	public boolean isDone() {
-		if(getPercent()==1) {
-			System.out.println("Done loading");
-			return true;
-		}
-		return false;
 	}
 	
 	@Override

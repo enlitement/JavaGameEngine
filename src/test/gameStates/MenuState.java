@@ -10,8 +10,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import test.core.StateManager;
 import test.gameInterfaces.Paintable;
+import unused.StateManager;
 
 public class MenuState extends State implements Paintable{
 	public Button play, exit;

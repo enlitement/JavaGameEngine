@@ -1,33 +1,35 @@
 package test.core;
 
-public abstract class GameComponent implements Runnable {
-	public Game game;
+import test.core.graphics.GraphicsManager;
+import test.core.input.KeyboardInput;
+import test.core.input.MouseInput;
+import test.core.resources.ResourceManager;
 
-	public GameComponent(Game game) {
-		this.game = game;
+public abstract class GameComponent extends SuperGameComponent{
+
+	public GameComponent() {
+		super();
 	}
-
+	
 	public ResourceManager getResources() {
-		return game.resourceManager;
+		return game.getResourceManager();
 	}
 
 	public GraphicsManager getGraphics() {
-		return game.graphicsManager;
+		return game.getGraphicsManager();
 	}
 
-	public StateManager getStateMan() {
-		return game.stateManager;
+	public Sandbox getSandbox() {
+		return game.getSandbox();
 	}
 
 	public KeyboardInput getKeyBoard() {
-		return game.keyboard;
+		return game.getKeyboard();
 	}
-	public abstract void run();
+	
+	public MouseInput getMouse() {
+		return game.getMouse();
+	}
 
-	public void sleep(long ms) {
-		try {
-			Thread.sleep(ms);
-		} catch (InterruptedException e) {
-		}
-	}
+	public abstract void run();
 }

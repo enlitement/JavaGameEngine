@@ -10,38 +10,46 @@ import java.awt.image.BufferStrategy;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import test.core.graphics.GraphicsManager;
+import test.core.input.KeyboardInput;
+import test.core.input.MouseInput;
+import test.core.resources.ResourceManager;
+
 public class Game extends Canvas implements Runnable {
+
 	private static final long serialVersionUID = 1L;
-	public final static int WIDTH = 600, HEIGHT = 400;
-	
+
+	// Size of the window
+	public static int WIDTH = 600, HEIGHT = 400;
 	// Game window
-	public JFrame container;
+	private JFrame frame;
 	// Graphics strategy
-	public BufferStrategy strategy;
-	
-	// Main Game components
+	private BufferStrategy strategy;
 	// Manages the painting of the game
-	public GraphicsManager graphicsManager;
-	// Manages all the State objects for the game
-	public StateManager stateManager;
+	private GraphicsManager graphicsManager;
+	// Manages the actual game creation
+	private Sandbox sandbox;
 	// Manages all resources (Images, Audio, etc.)
-	public ResourceManager resourceManager;
+	private ResourceManager resourceManager;
+
 	// Keyboard polling
-	public KeyboardInput keyboard;
+	private KeyboardInput keyboard;
+	// Mouse polling
+	private MouseInput mouse;
 
 	// Main thread
 	public Thread thread;
-	public boolean isRunning, isPaused;
+	public boolean isRunning;
 	public long lastFpsTime;
 	public int fps, framesPerSecond;
 
 	public Game() {
 		// Make JFrame
-		container = new JFrame("Test");
+		frame = new JFrame("Test");
 
 		// get hold the content of the frame and set up the resolution of the
 		// game
-		JPanel panel = (JPanel) container.getContentPane();
+		JPanel panel = (JPanel) frame.getContentPane();
 		panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		panel.setLayout(null);
 
@@ -54,15 +62,15 @@ public class Game extends Canvas implements Runnable {
 		setIgnoreRepaint(true);
 
 		// finally make the window visible
-		container.pack();
-		container.setResizable(false);
-		container.setVisible(true);
-		container.setLocationRelativeTo(null);
+		frame.pack();
+		frame.setResizable(false);
+		frame.setVisible(true);
+		frame.setLocationRelativeTo(null);
 
 		// add a listener to respond to the user closing the window. If they
 		// do we'd like to exit the game
 
-		container.addWindowListener(new WindowAdapter() {
+		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
@@ -72,6 +80,12 @@ public class Game extends Canvas implements Runnable {
 		// so we can respond to key pressed
 		keyboard = new KeyboardInput();
 		addKeyListener(keyboard);
+
+		// add a mouse input system to the canvas to accept mouse
+		// input
+		mouse = new MouseInput(this);
+		addMouseListener(mouse);
+		addMouseMotionListener(mouse);
 
 		// request the focus so key events come to us
 		requestFocusInWindow();
@@ -85,15 +99,24 @@ public class Game extends Canvas implements Runnable {
 		// to paint or not
 		setIgnoreRepaint(true);
 
-		// Start game components
-		resourceManager = new ResourceManager(this);
-		stateManager = new StateManager(this);
-		graphicsManager = new GraphicsManager(this);
+		startLoop();
+	}
 
-		// Start main game loop
+	public void startGameComponents() {
+		// Start game components
+		resourceManager = new ResourceManager();
+		graphicsManager = new GraphicsManager();
+
+		System.out.println("Game Components started");
+	}
+
+	/**
+	 * Start main game loop
+	 */
+	public void startLoop() {
+		isRunning = false;
 		thread = new Thread(this);
 		thread.start();
-		isRunning = true;
 	}
 
 	/**
@@ -101,6 +124,27 @@ public class Game extends Canvas implements Runnable {
 	 */
 	@Override
 	public void run() {
+		// Make the necessary game components
+		startGameComponents();
+
+		while (!isRunning) {
+			// Sleep, allow for the sandbox to initialize
+			if (getSandbox() == null) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+				}
+			} else if (getSandbox() != null && getSandbox().initializing) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+				}
+			} else if (!getSandbox().initializing && getSandbox() != null) {
+				isRunning = true;
+				System.out.println("Sandbox acquired");
+			}
+		}
+
 		while (isRunning) {
 
 			long lastLoopTime = System.nanoTime();
@@ -120,38 +164,95 @@ public class Game extends Canvas implements Runnable {
 					lastFpsTime = 0;
 					fps = 0;
 				}
-				
+
+				// Check for any pending resources
+				resourceManager.run();
+
 				// Update keyboard
 				keyboard.poll();
-				
-				// Run the update loop
-				stateManager.run();
-				
+
+				// Update mouse
+				mouse.poll();
+
+				// Update the game
+				sandbox.run();
+
 				// Draw the graphics
 				graphicsManager.run();
 
 				try {
-					// System.out.println("Sleep time:"+((lastLoopTime -
-					// System.nanoTime()) / 1000000 + 10));
-					//Thread.sleep((lastLoopTime - System.nanoTime()) / 1000000 + 10);
-					Thread.sleep(30);
+					// System.out.println("Sleep time:"
+					// + ((lastLoopTime - System.nanoTime()) / 1000000 + 10));
+					Thread.sleep((lastLoopTime - System.nanoTime()) / 1000000 + 10);
+					// Thread.sleep(1500);
 				} catch (Exception ex) {
 					System.out.println(ex);
 				}
 			}
 		}
-
 	}
 
 	/**
 	 * Exits the program
 	 */
 	public void gameExit() {
-		WindowEvent wev = new WindowEvent(container, WindowEvent.WINDOW_CLOSING);
+		WindowEvent wev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
 		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 	}
 
-	public static void main(String[] args) {
-		new Game();
+	public BufferStrategy getStrategy() {
+		return strategy;
+	}
+
+	public GraphicsManager getGraphicsManager() {
+		return graphicsManager;
+	}
+
+	public Sandbox getSandbox() {
+		return sandbox;
+	}
+
+	public ResourceManager getResourceManager() {
+		return resourceManager;
+	}
+
+	public KeyboardInput getKeyboard() {
+		return keyboard;
+	}
+
+	public MouseInput getMouse() {
+		return mouse;
+	}
+
+	public void setContainer(JFrame container) {
+		this.frame = container;
+	}
+
+	public void setStrategy(BufferStrategy strategy) {
+		this.strategy = strategy;
+	}
+
+	public void setGraphicsManager(GraphicsManager graphicsManager) {
+		this.graphicsManager = graphicsManager;
+	}
+
+	public void setSandbox(Sandbox sandbox) {
+		this.sandbox = sandbox;
+	}
+
+	public void setResourceManager(ResourceManager resourceManager) {
+		this.resourceManager = resourceManager;
+	}
+
+	public void setKeyboard(KeyboardInput keyboard) {
+		this.keyboard = keyboard;
+	}
+
+	public void setMouse(MouseInput mouse) {
+		this.mouse = mouse;
+	}
+
+	public JFrame getFrame() {
+		return frame;
 	}
 }

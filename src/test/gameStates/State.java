@@ -1,8 +1,8 @@
 package test.gameStates;
 
-import test.core.AbstractStateManager;
-import test.core.KeyboardInput;
+import test.core.input.KeyboardInput;
 import test.gameInterfaces.Paintable;
+import unused.AbstractStateManager;
 
 public abstract class State implements Paintable {
 

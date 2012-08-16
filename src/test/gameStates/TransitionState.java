@@ -3,7 +3,7 @@ package test.gameStates;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import test.core.StateManager;
+import unused.StateManager;
 
 /**
  * The Transition State is a state that is created between the transitioning between 

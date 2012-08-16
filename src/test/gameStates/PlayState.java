@@ -4,11 +4,11 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import test.core.KeyboardInput;
-import test.core.StateManager;
-import test.sprite.Enemy;
-import test.sprite.Player;
-import test.sprite.Sprite;
+import test.core.input.KeyboardInput;
+import unused.Enemy;
+import unused.Player;
+import unused.Sprite;
+import unused.StateManager;
 
 public class PlayState extends AbstractPlayState {
 
@@ -129,8 +129,8 @@ public class PlayState extends AbstractPlayState {
 		stateManager.getResources().addResource("block.png", player);
 		stateManager.getResources().addResource("grassSandLeft.png", player);
 		stateManager.getResources().addResource("Heart.png", player);
-		//stateManager.getResources().addResource("House.png", player);
-		//stateManager.getResources().addResource("House.png", player);
+		stateManager.getResources().addResource("House.png", player);
+		stateManager.getResources().addResource("House.png", player);
 		stateManager.getResources().addResource("House.png", player);
 		stateManager.getResources().addResource("Item.png", player);
 		stateManager.getResources().addResource("Limestone.png", player);
@@ -144,7 +144,6 @@ public class PlayState extends AbstractPlayState {
 		stateManager.getResources().addResource("Brick.png", player);
 		stateManager.getResources().addResource("HPpot.png", player);
 		load();
-		
 	}
 
 }
