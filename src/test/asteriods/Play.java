@@ -3,6 +3,7 @@ package test.asteriods;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
+import test.core.Game;
 import test.core.Sandbox;
 import test.objects.GameObject;
 import test.rooms.Room;
@@ -15,8 +16,8 @@ public class Play extends Room {
 	public int wallCounter;
 	public int vpx = 0, vpy = 0;
 
-	public final int gameWidth = getSandbox().getGraphics().WIDTH,
-			gameHeight = getSandbox().getGraphics().HEIGHT;
+	public final int gameWidth = Game.WIDTH,
+			gameHeight = Game.HEIGHT;
 
 	public Play(Sandbox sandbox) {
 		super(sandbox);

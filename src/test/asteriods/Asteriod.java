@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import test.core.Sandbox;
+import test.core.resources.ResourceManager;
 import test.gameInterfaces.Collidable;
 import test.gameInterfaces.Movable;
 import test.gameInterfaces.Paintable;
@@ -21,7 +22,7 @@ public class Asteriod extends GameObject implements Paintable, Collidable,
 		this.dx = dx;
 		this.dy = dy;
 		rec = new Rectangle(xpos, ypos, width, height);
-		image = getSandbox().getResources().images.getImage("asteriod1.png");
+		image = ResourceManager.getInstance().images.getImage("asteriod1.png");
 	}
 
 	@Override

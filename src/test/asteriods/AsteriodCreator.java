@@ -2,6 +2,7 @@ package test.asteriods;
 
 import java.awt.Graphics2D;
 
+import test.core.Game;
 import test.core.Sandbox;
 import test.objects.GameObject;
 
@@ -11,8 +12,8 @@ public class AsteriodCreator extends GameObject {
 
 	public final int startNum = 20;
 
-	public final int gameWidth = getSandbox().getGraphics().WIDTH,
-			gameHeight = getSandbox().getGraphics().HEIGHT;
+	public final int gameWidth = Game.WIDTH,
+			gameHeight = Game.HEIGHT;
 
 	public AsteriodCreator(Sandbox sandbox, int vpx, int vpy) {
 		super(sandbox);

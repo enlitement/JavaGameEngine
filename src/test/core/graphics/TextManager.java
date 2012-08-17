@@ -13,8 +13,6 @@ import java.awt.RenderingHints;
  */
 public class TextManager {
 
-	public Font menuFont;
-	public Font HUDFont;
 	public FontMetrics metrics;
 
 	public GraphicsManager graphicsManager;

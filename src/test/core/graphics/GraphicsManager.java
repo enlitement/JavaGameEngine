@@ -1,13 +1,17 @@
 package test.core.graphics;
 
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 
 import test.core.Game;
-import test.core.GameComponent;
+import test.core.input.KeyboardInput;
 
-public class GraphicsManager extends GameComponent {
+public class GraphicsManager {
+
+	private Game game;
+	private static GraphicsManager graphicsManager;
 
 	public int WIDTH = test.core.Game.WIDTH;
 	public int HEIGHT = test.core.Game.HEIGHT;
@@ -17,25 +21,38 @@ public class GraphicsManager extends GameComponent {
 	private boolean fullScreen;
 
 	public Graphics2D g;
-	
+
 	public TextManager textManager;
-	
-	public GraphicsManager(Game game) {
-		super();
+
+	private GraphicsManager() {
+
+	}
+
+	public static synchronized GraphicsManager getInstance() {
+		if (graphicsManager == null) {
+			graphicsManager = new GraphicsManager();
+		}
+		return graphicsManager;
+	}
+
+	public void initialize(Game game) {
 		this.game = game;
 		strategy = game.getGameBufferStrategy();
 		g = (Graphics2D) strategy.getDrawGraphics();
 		textManager = new TextManager(this);
+
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 	}
 
 	public void checkFullScreenTriggered() {
-		if (getKeyBoard().keyDown(KeyEvent.VK_ESCAPE))
+		if (KeyboardInput.getInstance().keyDown(KeyEvent.VK_ESCAPE))
 			if (fullScreen) {
 				fullScreen = false;
 			} else {
 				fullScreen = true;
 			}
-		if (getKeyBoard().keyDown(KeyEvent.VK_F11))
+		if (KeyboardInput.getInstance().keyDown(KeyEvent.VK_F11))
 			if (fullScreen) {
 				fullScreen = false;
 			} else {
@@ -43,7 +60,6 @@ public class GraphicsManager extends GameComponent {
 			}
 	}
 
-	@Override
 	public void run() {
 		paint();
 		checkFullScreenTriggered();
@@ -54,11 +70,14 @@ public class GraphicsManager extends GameComponent {
 	 * out.
 	 */
 	private void paint() {
-		g = (Graphics2D) strategy.getDrawGraphics();
-		g.clearRect(0, 0, WIDTH, HEIGHT);
-		getSandbox().paint(g);
-		g.dispose();
+		try {
+			g = (Graphics2D) strategy.getDrawGraphics();
+			game.getSandbox().paint(g);
+		} finally {
+			g.dispose();
+		}
 		strategy.show();
+
 	}
 
 	public void setFullScreen(boolean fs) {

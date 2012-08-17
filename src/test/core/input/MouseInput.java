@@ -9,10 +9,13 @@ import java.awt.event.MouseMotionListener;
 /**
  * Mouse input listener. Mouse button 1 = Left click, 2 = Middle click, 3 =
  * Right click.
+ * 
  * @author Helson
  * 
  */
 public class MouseInput implements MouseListener, MouseMotionListener {
+
+	private static MouseInput mouseInput;
 
 	private static final int BUTTON_COUNT = 3;
 	// Is this relative or absolute
@@ -31,7 +34,11 @@ public class MouseInput implements MouseListener, MouseMotionListener {
 		ONCE // Down for the first time
 	}
 
-	public MouseInput(Component component) {
+	public MouseInput() {
+
+	}
+
+	public void initialize(Component component) {
 		// Create default mouse positions
 		mousePos = new Point(0, 0);
 		currentPos = new Point(0, 0);
@@ -41,6 +48,14 @@ public class MouseInput implements MouseListener, MouseMotionListener {
 		for (int i = 0; i < BUTTON_COUNT; ++i) {
 			poll[i] = MouseState.RELEASED;
 		}
+	}
+
+	// For lazy initialization
+	public static synchronized MouseInput getInstance() {
+		if (mouseInput == null) {
+			mouseInput = new MouseInput();
+		}
+		return mouseInput;
 	}
 
 	public synchronized void poll() {

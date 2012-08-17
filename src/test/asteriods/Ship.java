@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import test.core.Game;
 import test.core.Sandbox;
 import test.gameInterfaces.Movable;
 import test.gameInterfaces.Shootable;
@@ -192,9 +193,9 @@ public class Ship extends GameObject implements Movable, Shootable {
 		for (Bullet bull : bullets) {
 			if (bull != null)
 				if (bull.ypos < 0
-						|| bull.ypos >  getSandbox().getGraphics().HEIGHT*2
+						|| bull.ypos >  Game.HEIGHT*2
 						|| bull.xpos < 0
-						|| bull.xpos > getSandbox().getGraphics().WIDTH*2) {
+						|| bull.xpos > Game.WIDTH*2) {
 					bullets.remove(bull);
 					System.out.println("Bullet removed");
 					break;
@@ -206,17 +207,17 @@ public class Ship extends GameObject implements Movable, Shootable {
 	public void update(int vpx, int vpy) {
 		counter++;
 		
-		if(xpos > getSandbox().getGraphics().WIDTH)
+		if(xpos > Game.WIDTH)
 			xpos = 0;
 		
 		if(xpos < 0)
-			xpos = getSandbox().getGraphics().WIDTH;
+			xpos = Game.WIDTH;
 		
-		if(ypos > getSandbox().getGraphics().HEIGHT)
+		if(ypos > Game.HEIGHT)
 			ypos = 0;
 		
 		if(ypos < 0)
-			ypos = getSandbox().getGraphics().HEIGHT;
+			ypos = Game.HEIGHT;
 		
 		this.vpx = vpx;
 		this.vpy = vpy;

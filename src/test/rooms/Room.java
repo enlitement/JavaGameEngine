@@ -56,4 +56,8 @@ public abstract class Room implements Paintable {
 	public Sandbox getSandbox() {
 		return sandbox;
 	}
+	
+	public void addRoom(Room room) {
+		getSandbox().addRoom(room);
+	}
 }

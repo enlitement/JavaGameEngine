@@ -26,26 +26,25 @@ public class Game extends Canvas implements Runnable {
 	// Graphics strategy
 	private BufferStrategy strategy;
 	// Manages the painting of the game
-	private GraphicsManager graphicsManager;
+	private static GraphicsManager graphicsManager;
 	// Manages the actual game creation
 	private Sandbox sandbox;
 	// Manages all resources (Images, Audio, etc.)
-	private ResourceManager resourceManager;
-
+	private static ResourceManager resourceManager;
 	// Keyboard polling
-	private KeyboardInput keyboard;
+	private static KeyboardInput keyboard;
 	// Mouse polling
-	private MouseInput mouse;
+	private static MouseInput mouse;
 
 	// Main thread
-	public Thread thread;
-	public boolean isRunning;
-	public long lastFpsTime;
-	public int fps, framesPerSecond;
+	private Thread thread;
+	private boolean isRunning;
+	private long lastFpsTime;
+	private int fps;
 
-	public Game(Sandbox sandbox) {
+	public Game() {
 		// Make JFrame
-		frame = new JFrame("Test");
+		frame = new JFrame("Engine");
 
 		// get hold the content of the frame and set up the resolution of the
 		// game
@@ -76,16 +75,7 @@ public class Game extends Canvas implements Runnable {
 			}
 		});
 
-		// add a key input system (defined below) to our canvas
-		// so we can respond to key pressed
-		keyboard = new KeyboardInput();
-		addKeyListener(keyboard);
-
-		// add a mouse input system to the canvas to accept mouse
-		// input
-		mouse = new MouseInput(this);
-		addMouseListener(mouse);
-		addMouseMotionListener(mouse);
+		createInput();
 
 		// request the focus so key events come to us
 		requestFocusInWindow();
@@ -98,22 +88,40 @@ public class Game extends Canvas implements Runnable {
 		// Set ignore repaint so that we can determine when
 		// to paint or not
 		setIgnoreRepaint(true);
+	}
 
-		if(sandbox!=null)
-			System.out.println("Sandbox doesn't equal null");
-		if(sandbox==null)
-			System.out.println("Sandbox equals null");
+	public void runEngine(Sandbox sandbox) {
 		setSandbox(sandbox);
-		//startGameComponents(sandbox);
-		//startLoop();
+		startGameComponents();
+		startLoop();
 	}
 
 	public void startGameComponents() {
 		// Start game components
-		resourceManager = new ResourceManager(this);
-		graphicsManager = new GraphicsManager(this);
+		resourceManager = ResourceManager.getInstance();
+		ResourceManager.getInstance().initialize(this);
+		graphicsManager = GraphicsManager.getInstance();
+		GraphicsManager.getInstance().initialize(this);
 
 		System.out.println("Game Components started");
+	}
+
+	public void createInput() {
+		// add a key input system (defined below) to our canvas
+		// so we can respond to key pressed
+		keyboard = KeyboardInput.getInstance();
+		addKeyListener(keyboard);
+
+		// add a mouse input system to the canvas to accept mouse
+		// input
+		mouse = MouseInput.getInstance();
+		MouseInput.getInstance().initialize(this);
+		addMouseListener(mouse);
+		addMouseMotionListener(mouse);
+
+		System.out.println("Input constructed");
+		if (mouse != null)
+			System.out.println("Mouse is not null");
 	}
 
 	/**
@@ -145,7 +153,7 @@ public class Game extends Canvas implements Runnable {
 				fps++;
 
 				if (lastFpsTime >= 1000000000) {
-					framesPerSecond = fps;
+					//framesPerSecond = fps;
 					System.out.println("(FPS: " + fps + ")");
 					lastFpsTime = 0;
 					fps = 0;
@@ -186,63 +194,19 @@ public class Game extends Canvas implements Runnable {
 		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 	}
 
-	public BufferStrategy getStrategy() {
-		return strategy;
-	}
-
-	public GraphicsManager getGraphicsManager() {
-		return graphicsManager;
+	public void setSandbox(Sandbox sandbox) {
+		this.sandbox = sandbox;
 	}
 
 	public Sandbox getSandbox() {
 		return sandbox;
 	}
 
-	public ResourceManager getResourceManager() {
-		return resourceManager;
-	}
-
-	public KeyboardInput getKeyboard() {
-		return keyboard;
-	}
-
-	public MouseInput getMouse() {
-		return mouse;
-	}
-
-	public void setContainer(JFrame container) {
-		this.frame = container;
-	}
-
-	public void setStrategy(BufferStrategy strategy) {
-		this.strategy = strategy;
-	}
-
-	public void setGraphicsManager(GraphicsManager graphicsManager) {
-		this.graphicsManager = graphicsManager;
-	}
-
-	public void setSandbox(Sandbox sandbox) {
-		this.sandbox = sandbox;
-	}
-
-	public void setResourceManager(ResourceManager resourceManager) {
-		this.resourceManager = resourceManager;
-	}
-
-	public void setKeyboard(KeyboardInput keyboard) {
-		this.keyboard = keyboard;
-	}
-
-	public void setMouse(MouseInput mouse) {
-		this.mouse = mouse;
-	}
-
-	public JFrame getFrame() {
-		return frame;
-	}
-
 	public BufferStrategy getGameBufferStrategy() {
 		return strategy;
+	}
+	
+	public JFrame getFrame() {
+		return frame;
 	}
 }

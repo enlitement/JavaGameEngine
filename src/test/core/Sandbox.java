@@ -6,16 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import test.core.resources.ResourceManager;
 import test.objects.GameObject;
 import test.rooms.Room;
 
-public abstract class Sandbox extends GameComponent {
+public abstract class Sandbox {
 
+	private Game game;
 	private List<GameObject> objectList;
 	private Stack<Room> roomList;
 	public int currentRoom;
 	private CollisionManager collisionManager;
-
 	
 	public Sandbox() {
 		super();
@@ -23,29 +24,24 @@ public abstract class Sandbox extends GameComponent {
 		setRoomList(new Stack<Room>());
 		currentRoom = 0;
 		setCollisionManager(new CollisionManager(this));
+		createEngine();
+	}
+	
+	public void createEngine() {
+		this.game = new Game();
+		game.startGameComponents();
 	}
 
-	
 	public abstract void paint(Graphics2D g);
 
-	/**
-	 * Update method
-	 */
-	@Override
 	public abstract void run();
-
-	
-	public void createEngine(Sandbox sandbox) {
-		System.out.println("Trying to create engine...");
-		super.createEngine(sandbox);
-	}
 	
 	public void addImage(String imageName) {
-		getResources().addImage(imageName);
+		ResourceManager.getInstance().addImage(imageName);
 	}
 
 	public Image getImage(String imageName) {
-		return getResources().getImage(imageName);
+		return ResourceManager.getInstance().getImage(imageName);
 	}
 
 	/**
@@ -114,6 +110,22 @@ public abstract class Sandbox extends GameComponent {
 	}
 	
 	public void runEngine(Sandbox sandbox) {
-		
+		game.runEngine(sandbox);
+	}
+	
+	public int getWidth() {
+		return Game.WIDTH;
+	}
+	
+	public int getHeight() {
+		return Game.HEIGHT;
+	}
+	
+	public void exitGame() {
+		game.gameExit();
+	}
+	
+	public void setTitle(String title) {
+		game.getFrame().setTitle(title);
 	}
 }

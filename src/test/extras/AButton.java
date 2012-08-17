@@ -1,30 +1,45 @@
 package test.extras;
 
 import test.core.Sandbox;
+import test.core.input.MouseInput;
 
-public class AButton extends Button {
+public class AButton extends Button{
+
+	public AButton(Sandbox sandbox, String text) {
+		super(sandbox, text);
+	}
 
 	public AButton(Sandbox sandbox, String text, int x, int y) {
 		super(sandbox, text, x, y);
 	}
 
-	
 	@Override
 	public void update() {
 		processInput();
-		if(pressed)
+		if (pressed) {
 			enableClickEffect();
-		else
+		}
+		if (!pressed)
 			revertClickEffect();
 	}
-	
+
 	@Override
 	protected void processInput() {
-		if(mouseWithinBounds(getMouse()) && getMouse().buttonDownOnce(1)) {
-			System.out.println("Clicked");
+		if (mouseWithinBounds(MouseInput.getInstance()) && MouseInput.getInstance().buttonDownOnce(1)) {
 			pressed = true;
 		}
-		else if(!getMouse().buttonDown(1))
+		if (!MouseInput.getInstance().buttonDown(1)) {
+			if (pressed && mouseWithinBounds(MouseInput.getInstance()))
+				clicked = true;
 			pressed = false;
+		}
+		if (clicked && !mouseWithinBounds(MouseInput.getInstance())) {
+			clicked = false;
+		}
+	}
+
+	@Override
+	public void addAction(ButtonAction button) {
+		
 	}
 }

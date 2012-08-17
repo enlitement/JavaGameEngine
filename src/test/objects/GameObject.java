@@ -41,15 +41,15 @@ public abstract class GameObject {
 	public abstract void update();
 	
 	public KeyboardInput getKeyBoard() {
-		return getSandbox().getKeyBoard();
+		return KeyboardInput.getInstance();
 	}
 	
 	public MouseInput getMouse() {
-		return getSandbox().getMouse();
+		return MouseInput.getInstance();
 	}
 	
 	public Point getMousePosition() {
-		return getSandbox().getMouse().getPosition();
+		return MouseInput.getInstance().getPosition();
 	}
 	
 	public Sandbox getSandbox() {

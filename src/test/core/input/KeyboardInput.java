@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 
 public class KeyboardInput implements KeyListener {
 
+	private static KeyboardInput keyboardInput;
 	private static final int KEY_COUNT = 256;
 
 	private enum KeyState {
@@ -25,6 +26,14 @@ public class KeyboardInput implements KeyListener {
 		for (int i = 0; i < KEY_COUNT; ++i) {
 			keys[i] = KeyState.RELEASED;
 		}
+	}
+
+	// For lazy initialization
+	public static synchronized KeyboardInput getInstance() {
+		if (keyboardInput == null) {
+			keyboardInput = new KeyboardInput();
+		}
+		return keyboardInput;
 	}
 
 	public synchronized void poll() {
