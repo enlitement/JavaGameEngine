@@ -1,7 +1,6 @@
 package test.asteriods;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
@@ -19,6 +18,7 @@ public class Bullet extends GameObject implements Paintable, Movable {
 	
 	public Bullet(Sandbox sandbox, int x, int y, double dx, double dy) {
 		super(sandbox);
+		name = "Bullet";
 		xpos = x;
 		ypos = y;
 		fired = true;

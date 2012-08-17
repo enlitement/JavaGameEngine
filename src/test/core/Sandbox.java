@@ -15,18 +15,17 @@ public abstract class Sandbox extends GameComponent {
 	private Stack<Room> roomList;
 	public int currentRoom;
 	private CollisionManager collisionManager;
-	
-	public boolean initializing;
+
 	
 	public Sandbox() {
 		super();
-		initializing = true;
 		objectList = new ArrayList<GameObject>();
 		setRoomList(new Stack<Room>());
 		currentRoom = 0;
 		setCollisionManager(new CollisionManager(this));
 	}
 
+	
 	public abstract void paint(Graphics2D g);
 
 	/**
@@ -35,6 +34,12 @@ public abstract class Sandbox extends GameComponent {
 	@Override
 	public abstract void run();
 
+	
+	public void createEngine(Sandbox sandbox) {
+		System.out.println("Trying to create engine...");
+		super.createEngine(sandbox);
+	}
+	
 	public void addImage(String imageName) {
 		getResources().addImage(imageName);
 	}
@@ -106,5 +111,9 @@ public abstract class Sandbox extends GameComponent {
 
 	public void setCollisionManager(CollisionManager collisionManager) {
 		this.collisionManager = collisionManager;
+	}
+	
+	public void runEngine(Sandbox sandbox) {
+		
 	}
 }

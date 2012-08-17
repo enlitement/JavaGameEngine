@@ -4,8 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 
+import test.core.Game;
 import test.core.GameComponent;
-import test.core.SuperGameComponent;
 
 public class GraphicsManager extends GameComponent {
 
@@ -16,24 +16,29 @@ public class GraphicsManager extends GameComponent {
 
 	private boolean fullScreen;
 
-	public GraphicsManager() {
+	public Graphics2D g;
+	
+	public TextManager textManager;
+	
+	public GraphicsManager(Game game) {
 		super();
-		strategy = SuperGameComponent.game.getStrategy();
+		this.game = game;
+		strategy = game.getGameBufferStrategy();
+		g = (Graphics2D) strategy.getDrawGraphics();
+		textManager = new TextManager(this);
 	}
 
 	public void checkFullScreenTriggered() {
 		if (getKeyBoard().keyDown(KeyEvent.VK_ESCAPE))
 			if (fullScreen) {
 				fullScreen = false;
-			}
-			else {
+			} else {
 				fullScreen = true;
 			}
 		if (getKeyBoard().keyDown(KeyEvent.VK_F11))
 			if (fullScreen) {
 				fullScreen = false;
-			}
-			else {
+			} else {
 				fullScreen = true;
 			}
 	}
@@ -49,7 +54,7 @@ public class GraphicsManager extends GameComponent {
 	 * out.
 	 */
 	private void paint() {
-		Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
+		g = (Graphics2D) strategy.getDrawGraphics();
 		g.clearRect(0, 0, WIDTH, HEIGHT);
 		getSandbox().paint(g);
 		g.dispose();

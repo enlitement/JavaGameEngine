@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import test.core.Game;
 import test.core.GameComponent;
 
 public class ResourceManager extends GameComponent implements Runnable {
@@ -20,8 +21,9 @@ public class ResourceManager extends GameComponent implements Runnable {
 
 	public List<String> loadQueue = new ArrayList<String>();
 
-	public ResourceManager() {
+	public ResourceManager(Game game) {
 		super();
+		this.game = game;
 		loading = new AtomicBoolean(false);
 		images = new ImageBank();
 		imageLoad = null;

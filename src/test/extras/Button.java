@@ -1,6 +1,8 @@
 package test.extras;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
@@ -16,7 +18,9 @@ public abstract class Button extends GameObject implements Paintable {
 	public boolean pressed;
 	public Color mainColor, displayColor;
 	public static final Color DARK_BLUE = new Color(0x00, 0x00, 0xC0);
-
+	
+	public Font menuFont;
+	public int textHeight, textWidth;
 	/**
 	 * Draw a blue button a position with specified text.
 	 * 
@@ -34,12 +38,22 @@ public abstract class Button extends GameObject implements Paintable {
 		this.text = text;
 		this.xpos = x;
 		this.ypos = y;
-		height = 50;
-		width = 200;
 		mainColor = Color.blue;
 		displayColor = mainColor;
 		pressed = false;
 		rec = new Rectangle(x, y, width, height);
+		
+		// Set up nice text
+		menuFont = new Font("Dialog", Font.PLAIN, 12);
+		FontMetrics metrics = sandbox.getText().getFontMetrics(menuFont);
+		sandbox.getText().setSmoothText(true);
+		
+		textHeight = metrics.getHeight();
+		textWidth = metrics.stringWidth(text);
+		
+		height = 50;
+		width = 150;
+		
 	}
 
 	/**
@@ -129,9 +143,10 @@ public abstract class Button extends GameObject implements Paintable {
 
 	public void paintButton(Graphics2D g) {
 		g.setColor(displayColor);
-		g.fillRoundRect((int) xpos, (int) ypos, width, height, 16, 12);
+		g.fillRect((int) xpos, (int) ypos, width, height);
 		g.setColor(Color.black);
-		g.drawString(text, (int) (xpos + width / 8), (int) (ypos + height / 2));
+		g.drawString(text, (int) (xpos+width/2-textWidth/2),(int)(ypos+height/2));
+		//g.drawString(text, (int) (xpos + width / 8), (int) (ypos + height / 2));
 	}
 
 	/**

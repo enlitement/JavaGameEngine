@@ -8,11 +8,10 @@ import java.util.ArrayList;
 
 import test.core.Sandbox;
 import test.gameInterfaces.Movable;
-import test.gameInterfaces.Paintable;
 import test.gameInterfaces.Shootable;
 import test.objects.GameObject;
 
-public class Ship extends GameObject implements Paintable, Movable, Shootable {
+public class Ship extends GameObject implements Movable, Shootable {
 
 	public int[] xPoints, yPoints;
 
@@ -24,12 +23,13 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 	public final double SPEEDCHANGE = .1, MIN_SPEED = .001, MAX_SPEED = .15,
 			sixtyDegrees = Math.PI / 3, SPEED_REDUCER = 2.4, correction = -1.5;
 
-	public double angle, ROTATESPEED = .01;
+	public double angle, ROTATESPEED = .05;
 
 	// Shooting
 	public int counter, lives;
-
-	public boolean fire, accelerate, deccelerate, turnRight, turnLeft;
+	public int vpx, vpy;
+	
+	public boolean fire, accelerate, brake, turnRight, turnLeft;
 
 	public ArrayList<Bullet> bullets;
 
@@ -46,20 +46,23 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 		xPoints[2] = xpos;
 		xPoints[3] = xpos - HALF_LENGTH;
 
-		yPoints[0] = ypos - HALF_LENGTH;
-		yPoints[1] = ypos + HALF_LENGTH;
+		yPoints[0] = ypos + HALF_LENGTH;
+		yPoints[1] = ypos - HALF_LENGTH;
 		yPoints[2] = ypos;
-		yPoints[3] = ypos + HALF_LENGTH;
+		yPoints[3] = ypos - HALF_LENGTH;
 		
 		/**
-		 * 			0.xpos,ypos-HALF
+		 * 
+		 * 	3.xpos-HALF,			1.xpos+HALF,
+		 * 	ypos+HALF				ypos-HALF
 		 * 
 		 * 			2.xpos,ypos
 		 * 
-		 * 	3.xpos-HALF,			1.xpos+HALF,
-		 * 	ypos+HALF			ypos+HALF
+		 * 
+		 * 			0.xpos,
+		 * 			ypos+half
 		 */
-		fire = accelerate = deccelerate = false;
+		fire = accelerate = brake = false;
 		turnRight = turnLeft = false;
 		lives = 3;
 		angle = counter = 0;
@@ -73,11 +76,9 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 		// Determine the angle of the player
 		if (turnLeft) {
 			angle += ROTATESPEED;
-			//System.out.println("Angle" + angle);
 		}
 		if (turnRight) {
 			angle -= ROTATESPEED;
-			//System.out.println("Angle" + angle);
 		}
 
 		// Keep angle within bounds of 0 to 2*PI
@@ -96,19 +97,20 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 		if (accelerate) {
 			dx = (int) (RADIUS * Math.sin(angle+correction) / SPEED_REDUCER);
 			dy = (int) (RADIUS * Math.cos(angle+correction) / SPEED_REDUCER);
-			System.out.println("ADx:" + dx);
-			System.out.println("ADy:" + dy);
+			//System.out.println("ADx:" + dx);
+			//System.out.println("ADy:" + dy);
 		}
 
 		// If the no force is being applied,
-		if (!accelerate && !deccelerate) {
+		if (!accelerate && !brake) {
 			// Set the new dx and dy to 97% of the old dx and dy
+			// "Coast"
 			dx *= .97;
 			dy *= .97;
 		}
-		if (deccelerate) {
-			dx *= .987;
-			dy *= .987;
+		if (brake) {
+			dx *= .95;
+			dy *= .95;
 		}
 		xpos += dx;
 		ypos += dy;
@@ -123,11 +125,11 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 	public void shoot() {
 		if (checkBulletsFired() < 5) {
 			// Make a new bullet along the trajectory of the player
-			double xTrajectory = RADIUS * Math.sin(angle + 90);
-			double yTrajectory = RADIUS * Math.cos(angle + 90);
+			double xTrajectory = RADIUS * Math.sin(angle + correction);
+			double yTrajectory = RADIUS * Math.cos(angle + correction);
 
 			Bullet bullet = new Bullet(getSandbox(),
-					(int) (xpos + xTrajectory), (int) (ypos + yTrajectory),
+					(int) (xpos - vpx + xTrajectory), (int) (ypos - vpy + yTrajectory),
 					xTrajectory, yTrajectory);
 			bullets.add(bullet);
 			fire = true;
@@ -143,36 +145,41 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 		return bulletsFired;
 	}
 
-	@Override
-	public void paint(Graphics2D g) {
+	public void paint(Graphics2D g, int vpx, int vpy) {
+		
+		g.drawRect(0-vpx,0-vpy,600,400);
+		g.drawRect((int)(150-vpx),(int)150-vpy,32,32);
+		
+		g.drawString("Vpx"+vpx+"Vpy"+vpy,0,0+10);
+		g.drawString("Vpx+Width"+(vpx+600),520,10);
+		g.drawString("Vpy+Height"+(vpy+400),0,390);
+		g.drawString("Vpx+W"+(vpx+600),520,380);
+		g.drawString("Vpy+H"+(vpy+400),520,390);
 		g.setColor(java.awt.Color.red);
-		
-		int dx2 = (int) (RADIUS * Math.sin(angle+correction));
-		int dy2 = (int) (RADIUS * Math.cos(angle+correction));
-		
-		g.drawLine((int)xpos,(int)ypos,(int)(dx2+xpos),(int)(dy2+ypos));
-		// 2.14
+		g.drawString(""+(int)(xpos)+","+(int)(ypos),(int)xpos-vpx,(int)ypos-vpy);
 		for (int i = 0; i < xPoints.length; i++) {
 			if (i == 0) {
-				xPoints[i] = (int) (xpos + RADIUS * Math.cos(Math.PI-angle));
-				yPoints[i] = (int) (ypos + RADIUS * Math.sin(Math.PI-angle));
+				xPoints[i] = (int) (xpos + RADIUS * Math.cos(Math.PI-angle)) - vpx;
+				yPoints[i] = (int) (ypos + RADIUS * Math.sin(Math.PI-angle)) - vpy;
 			}
 			if (i == 1) {
-				xPoints[i] = (int) (xpos + RADIUS * Math.cos(Math.PI-angle + 2.14));
-				yPoints[i] = (int) (ypos + RADIUS * Math.sin(Math.PI-angle + 2.14));
+				xPoints[i] = (int) (xpos + RADIUS * Math.cos(Math.PI-angle + 2.14)) - vpx;
+				yPoints[i] = (int) (ypos + RADIUS * Math.sin(Math.PI-angle + 2.14)) - vpy;
 			}
 			if (i == 2) {
-				xPoints[i] = (int) (xpos);
-				yPoints[i] = (int) (ypos);
+				xPoints[i] = (int) (xpos) - vpx;
+				yPoints[i] = (int) (ypos) - vpy;
 			}
 			if (i == 3) {
-				xPoints[i] = (int) (xpos + RADIUS * Math.cos(Math.PI-angle - 2.14));
-				yPoints[i] = (int) (ypos + RADIUS * Math.sin(Math.PI-angle - 2.14));
+				xPoints[i] = (int) (xpos + RADIUS * Math.cos(Math.PI-angle - 2.14)) - vpx;
+				yPoints[i] = (int) (ypos + RADIUS * Math.sin(Math.PI-angle - 2.14)) - vpy;
 			}
 		}
-
 		Polygon p = new Polygon(xPoints, yPoints, 4);
 		g.drawPolygon(p);
+		
+		for(Bullet bull: bullets)
+			bull.paint(g);
 	}
 
 	@Override
@@ -185,9 +192,9 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 		for (Bullet bull : bullets) {
 			if (bull != null)
 				if (bull.ypos < 0
-						|| bull.ypos > getSandbox().getGraphics().HEIGHT
+						|| bull.ypos >  getSandbox().getGraphics().HEIGHT*2
 						|| bull.xpos < 0
-						|| bull.xpos > getSandbox().getGraphics().WIDTH) {
+						|| bull.xpos > getSandbox().getGraphics().WIDTH*2) {
 					bullets.remove(bull);
 					System.out.println("Bullet removed");
 					break;
@@ -196,11 +203,25 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 		}
 	}
 
-	public void update() {
+	public void update(int vpx, int vpy) {
 		counter++;
 		
+		if(xpos > getSandbox().getGraphics().WIDTH)
+			xpos = 0;
+		
+		if(xpos < 0)
+			xpos = getSandbox().getGraphics().WIDTH;
+		
+		if(ypos > getSandbox().getGraphics().HEIGHT)
+			ypos = 0;
+		
+		if(ypos < 0)
+			ypos = getSandbox().getGraphics().HEIGHT;
+		
+		this.vpx = vpx;
+		this.vpy = vpy;
 		processInput();
-		System.out.println("Accelerate:"+accelerate);
+		//System.out.println("Accelerate:"+accelerate);
 		if (fire && counter > MIN_FIRE_TIME) {
 			shoot();
 			counter = 0;
@@ -261,7 +282,7 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 			accelerate = true;
 		}
 		if (getKeyBoard().keyDown(KeyEvent.VK_S)) {
-			deccelerate = true;
+			brake = true;
 		}
 		if (getKeyBoard().keyDown(KeyEvent.VK_A)) {
 			turnLeft = true;
@@ -277,7 +298,7 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 			accelerate = false;
 		}
 		if (!getKeyBoard().keyDown(KeyEvent.VK_S)) {
-			deccelerate = true;
+			brake = false;
 		}
 		if (!getKeyBoard().keyDown(KeyEvent.VK_A)) {
 			turnLeft = false;
@@ -289,5 +310,11 @@ public class Ship extends GameObject implements Paintable, Movable, Shootable {
 			fire = false;
 		}
 
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
 	}
 }

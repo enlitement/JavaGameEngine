@@ -43,7 +43,7 @@ public class Game extends Canvas implements Runnable {
 	public long lastFpsTime;
 	public int fps, framesPerSecond;
 
-	public Game() {
+	public Game(Sandbox sandbox) {
 		// Make JFrame
 		frame = new JFrame("Test");
 
@@ -99,13 +99,19 @@ public class Game extends Canvas implements Runnable {
 		// to paint or not
 		setIgnoreRepaint(true);
 
-		startLoop();
+		if(sandbox!=null)
+			System.out.println("Sandbox doesn't equal null");
+		if(sandbox==null)
+			System.out.println("Sandbox equals null");
+		setSandbox(sandbox);
+		//startGameComponents(sandbox);
+		//startLoop();
 	}
 
 	public void startGameComponents() {
 		// Start game components
-		resourceManager = new ResourceManager();
-		graphicsManager = new GraphicsManager();
+		resourceManager = new ResourceManager(this);
+		graphicsManager = new GraphicsManager(this);
 
 		System.out.println("Game Components started");
 	}
@@ -114,7 +120,7 @@ public class Game extends Canvas implements Runnable {
 	 * Start main game loop
 	 */
 	public void startLoop() {
-		isRunning = false;
+		isRunning = true;
 		thread = new Thread(this);
 		thread.start();
 	}
@@ -124,26 +130,6 @@ public class Game extends Canvas implements Runnable {
 	 */
 	@Override
 	public void run() {
-		// Make the necessary game components
-		startGameComponents();
-
-		while (!isRunning) {
-			// Sleep, allow for the sandbox to initialize
-			if (getSandbox() == null) {
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-				}
-			} else if (getSandbox() != null && getSandbox().initializing) {
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-				}
-			} else if (!getSandbox().initializing && getSandbox() != null) {
-				isRunning = true;
-				System.out.println("Sandbox acquired");
-			}
-		}
 
 		while (isRunning) {
 
@@ -254,5 +240,9 @@ public class Game extends Canvas implements Runnable {
 
 	public JFrame getFrame() {
 		return frame;
+	}
+
+	public BufferStrategy getGameBufferStrategy() {
+		return strategy;
 	}
 }

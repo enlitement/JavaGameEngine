@@ -1,14 +1,17 @@
 package test.core;
 
 import test.core.graphics.GraphicsManager;
+import test.core.graphics.TextManager;
 import test.core.input.KeyboardInput;
 import test.core.input.MouseInput;
 import test.core.resources.ResourceManager;
 
-public abstract class GameComponent extends SuperGameComponent{
+public abstract class GameComponent{
 
+	public Game game;
+	
 	public GameComponent() {
-		super();
+		
 	}
 	
 	public ResourceManager getResources() {
@@ -30,6 +33,19 @@ public abstract class GameComponent extends SuperGameComponent{
 	public MouseInput getMouse() {
 		return game.getMouse();
 	}
+	
+	public TextManager getText() {
+		return getGraphics().textManager;
+	}
 
+	public Game getGame() {
+		return game;
+	}
 	public abstract void run();
+	
+	public void createEngine(Sandbox sandbox) {
+		this.game = new Game(sandbox);
+		game.startGameComponents();
+		game.startLoop();
+	}
 }
