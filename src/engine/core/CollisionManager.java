@@ -6,7 +6,6 @@ import java.util.List;
 import engine.interfaces.Collidable;
 import engine.objects.GameObject;
 
-
 public class CollisionManager {
 
 	public Sandbox sandbox;
@@ -19,18 +18,26 @@ public class CollisionManager {
 	}
 
 	public void setUpCollidables() {
-		collidables = sandbox.getCurrentRoom().getCollidables();
+		System.out.println("Line 22, CollisionManager");
+		collidables = sandbox.getCurrentRoomCollidables();
 	}
-	
+
 	public void checkCollisions() {
+		// System.out.println("Checking collision");
 		for (GameObject obj1 : collidables)
 			for (GameObject obj2 : collidables)
-				if (obj1 != obj2 && obj1.rec.intersects(obj2.rec))
-					collision((Collidable)obj1,(Collidable)obj2);
+				if (obj1 != obj2 && obj1.rec.intersects(obj2.rec)) {
+					if(obj1.name!=obj2.name)
+						System.out.println("Collision:" + obj1.name + " and "
+								+ obj2.name);
+					collision((Collidable) obj1, (Collidable) obj2);
+
+				}
 
 	}
 
 	public void collision(Collidable obj1, Collidable obj2) {
+		// System.out.println("Collision");
 		obj1.onCollision((GameObject) obj2);
 		obj2.onCollision((GameObject) obj1);
 	}
@@ -40,17 +47,19 @@ public class CollisionManager {
 	}
 
 	/**
-	 * Get the collidables from the room to make sure that all objects remain the same.
+	 * Get the collidables from the room to make sure that all objects remain
+	 * the same.
 	 */
 	public void updateCollidables() {
-		collidables = sandbox.getCurrentRoom().getCollidables();
+		collidables = sandbox.getCurrentRoomCollidables();
 	}
 
 	/**
 	 * Removes all items in the removeQueue and updates the collidables list,
-	 * along with the sanbox list and the removeQueue.
+	 * along with the sandbox list and the removeQueue.
 	 */
 	public void updateSprites() {
+		updateCollidables();
 		checkCollisions();
 		synchronized (collidables) {
 			if (!removeQueue.isEmpty())
@@ -59,7 +68,8 @@ public class CollisionManager {
 					sandbox.removeObject(obj);
 					removeQueue.remove(obj);
 				}
-			updateCollidables();
+
 		}
+		//updateCollidables();
 	}
 }

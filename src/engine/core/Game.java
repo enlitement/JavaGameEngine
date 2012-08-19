@@ -41,7 +41,7 @@ public class Game extends Canvas implements Runnable {
 	private Thread thread;
 	private boolean isRunning;
 	private long lastFpsTime;
-	private int fps;
+	private int fps, framesPerSecond;
 
 	public Game() {
 		setUpWindow();
@@ -78,8 +78,8 @@ public class Game extends Canvas implements Runnable {
 			fps++;
 
 			if (lastFpsTime >= 1000000000) {
-				// framesPerSecond = fps;
-				System.out.println("(FPS: " + fps + ")");
+				framesPerSecond = fps;
+				//System.out.println("(FPS: " + fps + ")");
 				lastFpsTime = 0;
 				fps = 0;
 			}
@@ -214,4 +214,7 @@ public class Game extends Canvas implements Runnable {
 		});
 	}
 
+	public int getFPS() {
+		return framesPerSecond;
+	}
 }

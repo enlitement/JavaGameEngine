@@ -43,7 +43,7 @@ public class Play extends Room {
 	public void update() {
 		if(getSandbox().getKeyBoard().keyDown(KeyEvent.VK_SPACE)) {
 			for(GameObject obj: getCollidables())
-			System.out.println(obj.name);
+				System.out.println(obj.name);
 		}
 		player.update();
 	}

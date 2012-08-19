@@ -29,7 +29,9 @@ public interface Shootable {
 	 * aren't within the screen, remove them from the ArrayList.
 	 * 
 	 * @param bullets
+	 * @param vpx Viewport xposition
+	 * @param vpy Viewport yposition
 	 */
-	public void updateBullets(java.util.ArrayList<Bullet> bullets);
+	public void updateBullets(java.util.ArrayList<Bullet> bullets, int vpx, int vpy);
 
 }

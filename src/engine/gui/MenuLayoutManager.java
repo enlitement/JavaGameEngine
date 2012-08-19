@@ -112,7 +112,6 @@ public class MenuLayoutManager {
 		if (titleImage == null && titleString != null) {
 			g.setFont(titleFont);
 			g.drawString(titleString,titleXpos,titleYpos);
-			//g.drawLine(titleXpos, titleYpos, titleXpos+GraphicsManager.get().textManager.getFontWidth(titleFont, titleString)*3, titleYpos);
 		}
 		for (Button b : buttonList) {
 			b.paint(g);

@@ -1,5 +1,6 @@
 package engine.asteriods;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -9,14 +10,12 @@ import java.util.ArrayList;
 import engine.core.Game;
 import engine.core.Sandbox;
 import engine.core.input.KeyboardInput;
+import engine.interfaces.Collidable;
 import engine.interfaces.Movable;
 import engine.interfaces.Shootable;
 import engine.objects.GameObject;
 
-
-public class Ship extends GameObject implements Movable, Shootable {
-
-	public int[] xPoints, yPoints;
+public class Ship extends GameObject implements Movable, Shootable, Collidable {
 
 	// Geometric integers
 	public final int SIDELENGTH = 20, HALF_LENGTH = SIDELENGTH / 2,
@@ -29,16 +28,16 @@ public class Ship extends GameObject implements Movable, Shootable {
 	public double angle, ROTATESPEED = .05;
 
 	// Shooting
-	public int counter, lives;
-	public int vpx, vpy;
-
+	public int[] xPoints, yPoints;
+	public int counter, lives, vpx, vpy;
 	public boolean fire, accelerate, brake, turnRight, turnLeft;
-
 	public ArrayList<Bullet> bullets;
 
-	public Ship(Sandbox sandbox, int xpos, int ypos) {
-		super(sandbox);
+	public Play play;
 
+	public Ship(Sandbox sandbox, Play play, int xpos, int ypos) {
+		super(sandbox);
+		name = "Ship";
 		this.xpos = xpos;
 		this.ypos = ypos;
 		xPoints = new int[4];
@@ -54,15 +53,8 @@ public class Ship extends GameObject implements Movable, Shootable {
 		yPoints[2] = ypos;
 		yPoints[3] = ypos - HALF_LENGTH;
 
-		/**
-		 * 
-		 * 3.xpos-HALF, 1.xpos+HALF, ypos+HALF ypos-HALF
-		 * 
-		 * 2.xpos,ypos
-		 * 
-		 * 
-		 * 0.xpos, ypos+half
-		 */
+		this.play = play;
+
 		fire = accelerate = brake = false;
 		turnRight = turnLeft = false;
 		lives = 3;
@@ -98,8 +90,6 @@ public class Ship extends GameObject implements Movable, Shootable {
 		if (accelerate) {
 			dx = (int) (RADIUS * Math.sin(angle + correction) / SPEED_REDUCER);
 			dy = (int) (RADIUS * Math.cos(angle + correction) / SPEED_REDUCER);
-			// System.out.println("ADx:" + dx);
-			// System.out.println("ADy:" + dy);
 		}
 
 		// If the no force is being applied,
@@ -115,24 +105,19 @@ public class Ship extends GameObject implements Movable, Shootable {
 		}
 		xpos += dx;
 		ypos += dy;
-		// System.out.println("Xpos:" + xpos);
-		// System.out.println("Ypos:" + ypos);
-		// System.out.println("Dx:" + dx);
-		// System.out.println("Dy:" + dy);
-
 	}
 
 	@Override
 	public void shoot() {
 		if (checkBulletsFired() < 5) {
 			// Make a new bullet along the trajectory of the player
-			double xTrajectory = RADIUS * Math.sin(angle + correction);
-			double yTrajectory = RADIUS * Math.cos(angle + correction);
+			double xTrajectory = RADIUS * Math.sin(angle + correction - .05);
+			double yTrajectory = RADIUS * Math.cos(angle + correction - .05);
 
-			Bullet bullet = new Bullet(getSandbox(),
-					(int) (xpos - vpx + xTrajectory),
-					(int) (ypos - vpy + yTrajectory), xTrajectory, yTrajectory);
+			Bullet bullet = new Bullet(getSandbox(), (int) (xpos - vpx),
+					(int) (ypos - vpy), xTrajectory, yTrajectory);
 			bullets.add(bullet);
+			play.addObject(bullet);
 			fire = true;
 		}
 	}
@@ -141,55 +126,40 @@ public class Ship extends GameObject implements Movable, Shootable {
 	public int checkBulletsFired() {
 		int bulletsFired = 0;
 		for (Bullet bullet : bullets)
-			if (bullet != null && bullet.fired)
+			if (bullet != null && bullet.fired && !bullet.dead)
 				bulletsFired++;
 		return bulletsFired;
 	}
 
 	public void paint(Graphics2D g, int vpx, int vpy) {
-
+		g.setColor(Color.red);
+		g.drawString("(" + (int) (xpos) + "," + (int) (xpos) + ")",
+				(int) (xpos - vpx), (int) (ypos - vpy));
 		g.drawRect(0 - vpx, 0 - vpy, 600, 400);
 		g.drawRect((int) (150 - vpx), (int) 150 - vpy, 32, 32);
 
-		g.drawString("Vpx" + vpx + "Vpy" + vpy, 0, 0 + 10);
-		g.drawString("Vpx+Width" + (vpx + 600), 520, 10);
-		g.drawString("Vpy+Height" + (vpy + 400), 0, 390);
-		g.drawString("Vpx+W" + (vpx + 600), 520, 380);
-		g.drawString("Vpy+H" + (vpy + 400), 520, 390);
-		g.setColor(java.awt.Color.red);
-		g.drawString("" + (int) (xpos) + "," + (int) (ypos), (int) xpos - vpx,
-				(int) ypos - vpy);
-		for (int i = 0; i < xPoints.length; i++) {
-			if (i == 0) {
-				xPoints[i] = (int) (xpos + RADIUS * Math.cos(Math.PI - angle))
-						- vpx;
-				yPoints[i] = (int) (ypos + RADIUS * Math.sin(Math.PI - angle))
-						- vpy;
-			}
-			if (i == 1) {
-				xPoints[i] = (int) (xpos + RADIUS
-						* Math.cos(Math.PI - angle + 2.14))
-						- vpx;
-				yPoints[i] = (int) (ypos + RADIUS
-						* Math.sin(Math.PI - angle + 2.14))
-						- vpy;
-			}
-			if (i == 2) {
-				xPoints[i] = (int) (xpos) - vpx;
-				yPoints[i] = (int) (ypos) - vpy;
-			}
-			if (i == 3) {
-				xPoints[i] = (int) (xpos + RADIUS
-						* Math.cos(Math.PI - angle - 2.14))
-						- vpx;
-				yPoints[i] = (int) (ypos + RADIUS
-						* Math.sin(Math.PI - angle - 2.14))
-						- vpy;
-			}
-		}
-		Polygon p = new Polygon(xPoints, yPoints, 4);
-		g.drawPolygon(p);
+		xPoints[0] = (int) (xpos + RADIUS * Math.cos(Math.PI - angle)) - vpx;
+		yPoints[0] = (int) (ypos + RADIUS * Math.sin(Math.PI - angle)) - vpy;
 
+		xPoints[1] = (int) (xpos + RADIUS * Math.cos(Math.PI - angle + 2.14))
+				- vpx;
+		yPoints[1] = (int) (ypos + RADIUS * Math.sin(Math.PI - angle + 2.14))
+				- vpy;
+
+		xPoints[2] = (int) (xpos) - vpx;
+		yPoints[2] = (int) (ypos) - vpy;
+
+		xPoints[3] = (int) (xpos + RADIUS * Math.cos(Math.PI - angle - 2.14))
+				- vpx;
+		yPoints[3] = (int) (ypos + RADIUS * Math.sin(Math.PI - angle - 2.14))
+				- vpy;
+
+		Polygon p = new Polygon(xPoints, yPoints, 4);
+		g.fillPolygon(p);
+
+		g.setColor(Color.green);
+		g.drawRect((int) (xpos - vpx - SIDELENGTH),
+				(int) (ypos - vpy - SIDELENGTH), SIDELENGTH * 2, SIDELENGTH * 2);
 		for (Bullet bull : bullets)
 			bull.paint(g);
 	}
@@ -200,91 +170,45 @@ public class Ship extends GameObject implements Movable, Shootable {
 	}
 
 	@Override
-	public void updateBullets(ArrayList<Bullet> bullets) {
+	public void updateBullets(ArrayList<Bullet> bullets, int vpx, int vpy) {
 		for (Bullet bull : bullets) {
-			if (bull != null)
-				if (bull.ypos < 0 || bull.ypos > Game.HEIGHT * 2
-						|| bull.xpos < 0 || bull.xpos > Game.WIDTH * 2) {
+			if (bull != null) {
+				if (bull.dead || bull.ypos < 0 || bull.ypos > Game.HEIGHT
+						|| bull.xpos < 0 || bull.xpos > Game.WIDTH) {
 					bullets.remove(bull);
+					play.removeObject(bull);
 					System.out.println("Bullet removed");
 					break;
 				} else
-					bull.update();
+					bull.update(vpx, vpy);
+			}
 		}
 	}
 
 	public void update(int vpx, int vpy) {
 		counter++;
-
-		if (xpos > Game.WIDTH)
-			xpos = 0;
-
-		if (xpos < 0)
-			xpos = Game.WIDTH;
-
-		if (ypos > Game.HEIGHT)
-			ypos = 0;
-
-		if (ypos < 0)
-			ypos = Game.HEIGHT;
-
 		this.vpx = vpx;
 		this.vpy = vpy;
 		processInput();
-		// System.out.println("Accelerate:"+accelerate);
 		if (fire && counter > MIN_FIRE_TIME) {
 			shoot();
 			counter = 0;
 		}
-
 		move();
-		rec = new Rectangle((int) xpos, (int) ypos, SIDELENGTH, SIDELENGTH);
-		updateBullets(bullets);
+		rec = new Rectangle((int) (xpos - vpx), (int) (ypos - vpy), SIDELENGTH,
+				SIDELENGTH);
+		updateBullets(bullets, vpx, vpy);
 	}
 
 	public void reset() {
 		xpos = 250;
 		ypos = 250;
-		bullets.removeAll(bullets);
+		for (int i = 0; i < bullets.size(); i++)
+			play.removeObject(bullets.get(i));
+
+		bullets.clear();
 		angle = 0;
 		dx = dy = 0;
-	}
-
-	@Override
-	public void moveFree(double direction, double speed) {
-		
-	}
-
-	@Override
-	public void moveToward(int x, int y) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setHorizontalSpeed(double speed) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setVerticalSpeed(double speed) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setFriction(double friction) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void setAccelerate(boolean accelerate) {
-		this.accelerate = accelerate;
-	}
-
-	public void setTurnLeft(boolean turnLeft) {
-		this.turnLeft = turnLeft;
 	}
 
 	public void processInput() {
@@ -319,12 +243,13 @@ public class Ship extends GameObject implements Movable, Shootable {
 		if (!KeyboardInput.get().keyDown(KeyEvent.VK_SPACE)) {
 			fire = false;
 		}
-
 	}
 
 	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-
+	public void onCollision(GameObject obj2) {
+		if (obj2.name == "Asteroid") {
+			System.out.println("Collided with asteroid");
+			reset();
+		}
 	}
 }

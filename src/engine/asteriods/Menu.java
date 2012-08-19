@@ -14,7 +14,7 @@ public class Menu extends Room {
 
 	public Menu(Sandbox sandbox) {
 		super(sandbox);
-		
+
 		// Set up MenuLayoutManager
 		layoutManager = new MenuLayoutManager(this);
 
@@ -23,12 +23,11 @@ public class Menu extends Room {
 
 		// Register for Action Events
 		play.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				addRoom(new Play(getSandbox()));
 				removeMe();
-				System.out.println("banger!");
 			}
 		});
 
@@ -52,7 +51,7 @@ public class Menu extends Room {
 			public void actionPerformed(ActionEvent event) {
 				getSandbox().exitGame();
 			}
-			
+
 		});
 		exit.setDisplayColor(Color.green);
 
@@ -61,13 +60,22 @@ public class Menu extends Room {
 		layoutManager.addButton(help);
 		layoutManager.addButton(another);
 		layoutManager.addButton(exit);
-
+		
+		addObject(play);
+		addObject(help);
+		addObject(another);
+		addObject(exit);
+		
+		//addAllObjects(layoutManager.buttonList);
+		
 		// Set a title image for the menu screen
-		// layoutManager.setTitleImage("asteriodBackground.png");
-		layoutManager.setTitleString("Asteriods!");
+		layoutManager.setTitleImage("asteriodBackground.png");
+
+		// Or, if an image is unavailable:
+		// layoutManager.setTitleString("Asteroids!");
+
 		// Layout the components
 		layoutManager.validate();
-
 	}
 
 	@Override

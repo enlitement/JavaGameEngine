@@ -28,7 +28,7 @@ public class ResourceManager implements Runnable {
 	private ResourceManager() {
 	}
 
-	public static ResourceManager getInstance() {
+	public static synchronized ResourceManager getInstance() {
 		if (resourceManager == null) {
 			resourceManager = new ResourceManager();
 		}

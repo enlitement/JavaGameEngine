@@ -2,8 +2,8 @@ package engine.asteriods;
 
 import java.awt.Graphics2D;
 
+import engine.core.CollisionManager;
 import engine.core.Sandbox;
-
 
 public class AsteriodsGame extends Sandbox {
 
@@ -11,6 +11,7 @@ public class AsteriodsGame extends Sandbox {
 
 	public AsteriodsGame() {
 		super();
+		setCollisionManager(new CollisionManager(this));
 		createRooms();
 		getCollisionManager().setUpCollidables();
 	}
@@ -27,13 +28,14 @@ public class AsteriodsGame extends Sandbox {
 
 	@Override
 	public void run() {
+		UniversalKeys.get(this).update();
 		getCurrentRoom().update();
 		getCollisionManager().updateSprites();
 	}
 
 	public static void main(String[] args) {
 		AsteriodsGame ast = new AsteriodsGame();
-		ast.setTitle("Asteriods, made with JGameEngine");
+		ast.setTitle("Asteriods! :^D");
 		ast.runEngine(ast);
 	}
 }

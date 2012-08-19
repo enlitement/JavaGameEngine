@@ -1,15 +1,16 @@
 package engine.core;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import engine.core.graphics.GraphicsManager;
 import engine.core.resources.ResourceManager;
 import engine.objects.GameObject;
 import engine.rooms.Room;
-
 
 public abstract class Sandbox {
 
@@ -18,16 +19,15 @@ public abstract class Sandbox {
 	private Stack<Room> roomList;
 	public int currentRoom;
 	private CollisionManager collisionManager;
-	
+
 	public Sandbox() {
 		super();
 		objectList = new ArrayList<GameObject>();
 		setRoomList(new Stack<Room>());
 		currentRoom = 0;
-		setCollisionManager(new CollisionManager(this));
 		createEngine();
 	}
-	
+
 	public void createEngine() {
 		this.game = new Game();
 		game.startGameComponents();
@@ -36,7 +36,7 @@ public abstract class Sandbox {
 	public abstract void paint(Graphics2D g);
 
 	public abstract void run();
-	
+
 	public void addImage(String imageName) {
 		ResourceManager.getInstance().addImage(imageName);
 	}
@@ -69,16 +69,21 @@ public abstract class Sandbox {
 	}
 
 	public Room getCurrentRoom() {
+		//System.out.println("Current room:"+getRoomList().get(currentRoom).getClass());
 		return getRoomList().get(currentRoom);
 	}
-
+	
+	public List<GameObject> getCurrentRoomCollidables() {
+		return getCurrentRoom().getCollidables();
+	}
 	public void createNewRoom(Room room) {
 		getRoomList().add(room);
 	}
 
 	public void nextRoom() {
 		int nextRoom = currentRoom + 1;
-		if (nextRoom < getRoomList().size() && getRoomList().get(nextRoom) != null) {
+		if (nextRoom < getRoomList().size()
+				&& getRoomList().get(nextRoom) != null) {
 			currentRoom++;
 		}
 	}
@@ -90,7 +95,8 @@ public abstract class Sandbox {
 	}
 
 	public void goToRoom(int room) {
-		if (room >= 0 && room < getRoomList().size() && getRoomList().get(room) != null)
+		if (room >= 0 && room < getRoomList().size()
+				&& getRoomList().get(room) != null)
 			currentRoom = room;
 	}
 
@@ -109,24 +115,29 @@ public abstract class Sandbox {
 	public void setCollisionManager(CollisionManager collisionManager) {
 		this.collisionManager = collisionManager;
 	}
-	
+
 	public void runEngine(Sandbox sandbox) {
 		game.runEngine(sandbox);
 	}
-	
+
 	public int getWidth() {
 		return Game.WIDTH;
 	}
-	
+
 	public int getHeight() {
 		return Game.HEIGHT;
 	}
-	
+
 	public void exitGame() {
 		game.gameExit();
 	}
-	
+
 	public void setTitle(String title) {
 		game.getFrame().setTitle(title);
+	}
+	
+	public void drawFPS() {
+		GraphicsManager.get().g.setColor(Color.green);
+		GraphicsManager.get().g.drawString("FPS:"+game.getFPS(), 10, 20);
 	}
 }

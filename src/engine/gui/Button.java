@@ -21,7 +21,7 @@ public abstract class Button extends GameObject implements Paintable {
 	public int height, width, textHeight, textWidth;
 	public boolean pressed, clicked;
 	public String text;
-	public Color gradient1, gradient2, light, dark;
+	public Color gradient1, gradient2, light, dark, outline;
 	public Font menuFont;
 
 	private List<ActionListener> _listeners = new ArrayList<ActionListener>();
@@ -46,7 +46,7 @@ public abstract class Button extends GameObject implements Paintable {
 		gradient2 = Color.white;
 		dark = gradient1;
 		light = gradient2;
-
+		outline = Color.black;
 		// Set up nice text for button
 		GraphicsManager.get().textManager.setSmoothText(true);
 		menuFont = new Font("Dialog", Font.BOLD, 13);
@@ -104,6 +104,7 @@ public abstract class Button extends GameObject implements Paintable {
 		gradient2 = Color.white;
 		dark = gradient1;
 		light = gradient2;
+		outline = Color.black;
 		pressed = false;
 
 		// Set up nice text for button
@@ -157,6 +158,9 @@ public abstract class Button extends GameObject implements Paintable {
 			revertClickEffect();
 	}
 
+	public void changeOutlineColor(Color color) {
+		this.outline = color;
+	}
 	/**
 	 * Called from within a layoutManager to make sure the rectangle is set up
 	 * for click detection.
@@ -220,7 +224,7 @@ public abstract class Button extends GameObject implements Paintable {
 		g.fillRoundRect((int) xpos, (int) ypos, width, height, 3, 3);
 
 		// Draw outline
-		g.setColor(Color.black);
+		g.setColor(outline);
 		g.drawRoundRect((int) xpos, (int) ypos, width, height, 3, 3);
 
 		// Draw text
@@ -229,6 +233,8 @@ public abstract class Button extends GameObject implements Paintable {
 				xpos, ypos, width, height);
 
 	}
+	
+	public abstract void update();
 
 	/**
 	 * Checks to see if the mouse click was in the bounds of the button.
