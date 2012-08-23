@@ -58,7 +58,7 @@ public class MenuLayoutManager {
 	}
 
 	public void setBackground(String backgroundName) {
-		background = ResourceManager.getInstance().images
+		background = ResourceManager.get().images
 				.getImage(backgroundName);
 	}
 
@@ -77,7 +77,7 @@ public class MenuLayoutManager {
 	}
 
 	public void setTitleImage(String titleImageName) {
-		titleImage = ResourceManager.getInstance().images
+		titleImage = ResourceManager.get().images
 				.getImage(titleImageName);
 	}
 
@@ -141,7 +141,7 @@ public class MenuLayoutManager {
 			// TODO: What's up with titleWidth calculation?
 			titleWidth = (int) (GraphicsManager.get().textManager.getFontWidth(
 					titleFont, titleString)*(titleFont.getSize()-3)/10);
-			System.out.println("Width:"+titleWidth);
+			//System.out.println("Width:"+titleWidth);
 			titleHeight = GraphicsManager.get().textManager
 					.getFontHeight(titleFont);
 
@@ -169,7 +169,7 @@ public class MenuLayoutManager {
 
 		// Now, display buttons.
 		for (int i = 0; i < buttonList.size(); i++) {
-			System.out.println("Name:" + buttonList.get(i).name);
+			//System.out.println("Name:" + buttonList.get(i).name);
 			// Xpos is center xpos of screen minus half the width of the button
 			int xpos = width / 2 - butWidth / 2;
 

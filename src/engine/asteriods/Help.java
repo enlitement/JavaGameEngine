@@ -1,5 +1,6 @@
 package engine.asteriods;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
@@ -28,10 +29,13 @@ public class Help extends Room {
 				removeMe();
 			}
 		});
+		setBackground("asteroidBackground.png");
 	}
 
 	@Override
 	public void paint(Graphics2D g) {
+		g.drawImage(background, 0, 0, null);
+		g.setColor(Color.white);
 		Font menuFont = new Font("Dialog", Font.BOLD, 13);
 		String str = "You need help; you've got it!";
 		GraphicsManager.get().textManager.drawCenteredText(menuFont, str, 0, 0,

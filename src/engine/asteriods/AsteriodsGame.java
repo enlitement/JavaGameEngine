@@ -23,19 +23,18 @@ public class AsteriodsGame extends Sandbox {
 
 	@Override
 	public void paint(Graphics2D g) {
-		getRoomList().get(currentRoom).paint(g);
+		for (int i = getRoomList().size() - 1; i >= 0; i--) 
+			getRoomList().get(i).paint(g);
 	}
 
 	@Override
 	public void run() {
-		UniversalKeys.get(this).update();
-		getCurrentRoom().update();
-		getCollisionManager().updateSprites();
+		updateCurrentRoom();
 	}
 
 	public static void main(String[] args) {
 		AsteriodsGame ast = new AsteriodsGame();
-		ast.setTitle("Asteriods! :^D");
+		ast.setTitle("Asteriods");
 		ast.runEngine(ast);
 	}
 }

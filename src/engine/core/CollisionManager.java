@@ -18,26 +18,23 @@ public class CollisionManager {
 	}
 
 	public void setUpCollidables() {
-		System.out.println("Line 22, CollisionManager");
 		collidables = sandbox.getCurrentRoomCollidables();
 	}
 
 	public void checkCollisions() {
 		// System.out.println("Checking collision");
-		for (GameObject obj1 : collidables)
-			for (GameObject obj2 : collidables)
-				if (obj1 != obj2 && obj1.rec.intersects(obj2.rec)) {
-					if(obj1.name!=obj2.name)
-						System.out.println("Collision:" + obj1.name + " and "
-								+ obj2.name);
-					collision((Collidable) obj1, (Collidable) obj2);
-
+		for (int i = 0; i < collidables.size(); i++) {
+			for (int a = i + 1; a < collidables.size(); a++) {
+				if (collidables.get(i).rec.intersects(collidables.get(a).rec)) {
+					collision((Collidable) collidables.get(i),
+							(Collidable) collidables.get(a));
 				}
+			}
+		}
 
 	}
 
 	public void collision(Collidable obj1, Collidable obj2) {
-		// System.out.println("Collision");
 		obj1.onCollision((GameObject) obj2);
 		obj2.onCollision((GameObject) obj1);
 	}
@@ -70,6 +67,5 @@ public class CollisionManager {
 				}
 
 		}
-		//updateCollidables();
 	}
 }

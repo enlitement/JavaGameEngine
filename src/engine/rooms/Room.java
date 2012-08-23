@@ -1,6 +1,7 @@
 package engine.rooms;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +15,7 @@ public abstract class Room implements Paintable {
 	public String name;
 	private Sandbox sandbox;
 	public ArrayList<GameObject> roomObjects;
+	public Image background;
 
 	public Room(Sandbox sandbox) {
 		this.sandbox = sandbox;
@@ -30,7 +32,8 @@ public abstract class Room implements Paintable {
 	}
 
 	public void setBackground(String imageName) {
-
+		background = engine.core.resources.ResourceManager.get().images
+				.getImage(imageName);
 	}
 
 	public void addAllObjects(Collection<? extends GameObject> obj) {
@@ -38,7 +41,6 @@ public abstract class Room implements Paintable {
 	}
 
 	public void addObject(GameObject obj) {
-		System.out.println("Room, line 40: Object added:" + obj.name);
 		roomObjects.add(obj);
 	}
 
@@ -58,9 +60,7 @@ public abstract class Room implements Paintable {
 	public List<GameObject> getCollidables() {
 		List<GameObject> tempList = new ArrayList<GameObject>(15);
 		for (GameObject obj : roomObjects) {
-			// System.out.println("Room line:60 Object:" + obj.name);
 			if (obj instanceof Collidable)
-				// System.out.println("Room line:61 Object added:" + obj.name);
 				tempList.add(obj);
 
 		}
@@ -69,6 +69,10 @@ public abstract class Room implements Paintable {
 
 	public Sandbox getSandbox() {
 		return sandbox;
+	}
+	
+	public void moveRoomBack() {
+		getSandbox().getRoomList().addLast(this);
 	}
 
 	public void addRoom(Room room) {

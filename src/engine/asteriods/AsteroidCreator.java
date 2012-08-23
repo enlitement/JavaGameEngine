@@ -1,6 +1,7 @@
 package engine.asteriods;
 
 import java.awt.Graphics2D;
+import java.util.Random;
 
 import engine.core.Game;
 import engine.core.Sandbox;
@@ -10,9 +11,8 @@ public class AsteroidCreator extends GameObject {
 
 	public Asteroid[] asteroids;
 	public Play play;
-	public int totalAsteroids = 5;
-	public int currAsteroids = totalAsteroids;
-	public int minSpeed;
+	public int totalAsteroids = 10, currAsteroids = totalAsteroids;
+	public int minSpeed, vpx, vpy;
 	public final int screenCheck = 100;
 	public final int gameWidth = Game.WIDTH, gameHeight = Game.HEIGHT;
 
@@ -21,15 +21,9 @@ public class AsteroidCreator extends GameObject {
 		name = "AsteriodCreator";
 		asteroids = new Asteroid[totalAsteroids];
 		this.play = play;
-		minSpeed = 1;
-		for (int i = 0; i < asteroids.length; i++) {
-			asteroids[i] = new Asteroid(sandbox,
-					(int) (Math.random() * gameWidth),
-					(int) (Math.random() * gameHeight), (int) newSpeed(
-							minSpeed, minSpeed + 3), newSpeed(minSpeed,
-							minSpeed + 3), 40, 40);
-			play.addObject(asteroids[i]);
-		}
+		minSpeed = 2;
+		asteroids = createAstArray(minSpeed, minSpeed+2);
+		vpx = vpy = 0;
 	}
 
 	public void paint(Graphics2D g, int vpx, int vpy) {
@@ -42,11 +36,7 @@ public class AsteroidCreator extends GameObject {
 	public Asteroid[] createAstArray(int minSpeed, int maxSpeed) {
 		Asteroid[] asteroidArray = new Asteroid[totalAsteroids];
 		for (int i = 0; i < asteroidArray.length; i++) {
-			asteroidArray[i] = new Asteroid(getSandbox(),
-					(int) (Math.random() * gameWidth),
-					(int) (Math.random() * gameHeight), (int) newSpeed(
-							minSpeed, maxSpeed), newSpeed(minSpeed, maxSpeed),
-					40, 40);
+			asteroidArray[i] = createNewAsteroid(vpx, vpy);
 			play.addObject(asteroidArray[i]);
 		}
 		return asteroidArray;
@@ -54,8 +44,9 @@ public class AsteroidCreator extends GameObject {
 	}
 
 	public synchronized void update(int vpx, int vpy) {
+		this.vpx = vpx;
+		this.vpy = vpy;
 		if (currAsteroids == 0) {
-			System.out.println("currAsteroids = 0");
 			totalAsteroids += 3;
 			currAsteroids = totalAsteroids;
 			minSpeed++;
@@ -85,11 +76,29 @@ public class AsteroidCreator extends GameObject {
 					asteroids[i].update(vpx, vpy);
 				if (asteroids[i].health <= 0) {
 					play.removeObject(asteroids[i]);
-					play.score += play.scoreIncrement;
+					Play.score += play.scoreIncrement;
 					currAsteroids--;
 					asteroids[i] = null;
 				}
 			}
+	}
+
+	public Asteroid createNewAsteroid(int vpx, int vpy) {
+		int xpos = 0;
+		int ypos = 0;
+		Random r = new Random();
+		double a = r.nextDouble();
+		if (a < .25)
+			xpos = vpx - 40;
+		if (a >= .25 && a < 5)
+			xpos = vpx + gameWidth + 40;
+		if (a >= .5 && a < .75)
+			ypos = vpy + gameHeight + 40;
+		if (a > .75 && a <= .99)
+			ypos = vpy - 40;
+		int dx = newSpeed(minSpeed, minSpeed + 3);
+		int dy = newSpeed(minSpeed, minSpeed + 3);
+		return new Asteroid(getSandbox(), xpos, ypos, dx, dy, 40, 40);
 	}
 
 	public void randomPosAndSpeed(Asteroid ast, int vpx, int vpy) {
@@ -141,6 +150,7 @@ public class AsteroidCreator extends GameObject {
 			a = -1;
 		else
 			a = 1;
-		return (int) (a * Math.random() * (max - min) + min);
+		Random r = new Random();
+		return (int) (a * r.nextDouble() * (max - min)) + min;
 	}
 }

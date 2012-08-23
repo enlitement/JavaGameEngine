@@ -35,6 +35,9 @@ public class Ship extends GameObject implements Movable, Shootable, Collidable {
 
 	public Play play;
 
+	public boolean invincible;
+	public int invincibleCounter;
+
 	public Ship(Sandbox sandbox, Play play, int xpos, int ypos) {
 		super(sandbox);
 		name = "Ship";
@@ -61,18 +64,19 @@ public class Ship extends GameObject implements Movable, Shootable, Collidable {
 		angle = counter = 0;
 		dx = dy = 0;
 		createBullets();
+		invincible = true;
+		invincibleCounter = 0;
 		rec = new Rectangle((int) xpos, (int) ypos, SIDELENGTH, SIDELENGTH);
 	}
 
 	@Override
 	public void move() {
 		// Determine the angle of the player
-		if (turnLeft) {
+		if (turnLeft)
 			angle += ROTATESPEED;
-		}
-		if (turnRight) {
+
+		if (turnRight)
 			angle -= ROTATESPEED;
-		}
 
 		// Keep angle within bounds of 0 to 2*PI
 		if (angle > (2 * Math.PI))
@@ -132,12 +136,10 @@ public class Ship extends GameObject implements Movable, Shootable, Collidable {
 	}
 
 	public void paint(Graphics2D g, int vpx, int vpy) {
-		g.setColor(Color.red);
-		g.drawString("(" + (int) (xpos) + "," + (int) (xpos) + ")",
-				(int) (xpos - vpx), (int) (ypos - vpy));
-		g.drawRect(0 - vpx, 0 - vpy, 600, 400);
-		g.drawRect((int) (150 - vpx), (int) 150 - vpy, 32, 32);
-
+		if (!invincible)
+			g.setColor(Color.red);
+		else
+			g.setColor(Color.white);
 		xPoints[0] = (int) (xpos + RADIUS * Math.cos(Math.PI - angle)) - vpx;
 		yPoints[0] = (int) (ypos + RADIUS * Math.sin(Math.PI - angle)) - vpy;
 
@@ -157,9 +159,6 @@ public class Ship extends GameObject implements Movable, Shootable, Collidable {
 		Polygon p = new Polygon(xPoints, yPoints, 4);
 		g.fillPolygon(p);
 
-		g.setColor(Color.green);
-		g.drawRect((int) (xpos - vpx - SIDELENGTH),
-				(int) (ypos - vpy - SIDELENGTH), SIDELENGTH * 2, SIDELENGTH * 2);
 		for (Bullet bull : bullets)
 			bull.paint(g);
 	}
@@ -177,7 +176,6 @@ public class Ship extends GameObject implements Movable, Shootable, Collidable {
 						|| bull.xpos < 0 || bull.xpos > Game.WIDTH) {
 					bullets.remove(bull);
 					play.removeObject(bull);
-					System.out.println("Bullet removed");
 					break;
 				} else
 					bull.update(vpx, vpy);
@@ -187,6 +185,11 @@ public class Ship extends GameObject implements Movable, Shootable, Collidable {
 
 	public void update(int vpx, int vpy) {
 		counter++;
+		if (invincibleCounter < 250) {
+			invincible = true;
+			invincibleCounter++;
+		} else
+			invincible = false;
 		this.vpx = vpx;
 		this.vpy = vpy;
 		processInput();
@@ -209,6 +212,8 @@ public class Ship extends GameObject implements Movable, Shootable, Collidable {
 		bullets.clear();
 		angle = 0;
 		dx = dy = 0;
+		invincible = true;
+		invincibleCounter = 0;
 	}
 
 	public void processInput() {
@@ -247,9 +252,10 @@ public class Ship extends GameObject implements Movable, Shootable, Collidable {
 
 	@Override
 	public void onCollision(GameObject obj2) {
-		if (obj2.name == "Asteroid") {
-			System.out.println("Collided with asteroid");
-			reset();
-		}
+		if (!invincible)
+			if (obj2.name == "Asteroid") {
+				reset();
+				play.lives--;
+			}
 	}
 }

@@ -7,9 +7,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 
+import javax.sound.sampled.AudioFormat;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import engine.asteriods.UniversalKeys;
+import engine.audio.SoundManager;
 import engine.core.graphics.GraphicsManager;
 import engine.core.input.KeyboardInput;
 import engine.core.input.MouseInput;
@@ -23,7 +26,7 @@ public class Game extends Canvas implements Runnable {
 	// Size of the window
 	public static int WIDTH = 600, HEIGHT = 400;
 	// Game window
-	private JFrame frame;
+	private static JFrame frame;
 	// Graphics strategy
 	private BufferStrategy strategy;
 	// Manages the painting of the game
@@ -36,7 +39,15 @@ public class Game extends Canvas implements Runnable {
 	private static KeyboardInput keyboard;
 	// Mouse polling
 	private static MouseInput mouse;
-
+	// Sound playing
+	private static SoundManager soundManager;
+	
+	 // uncompressed, 44100Hz, 16-bit, mono, signed, little-endian
+    public static final AudioFormat PLAYBACK_FORMAT =
+        new AudioFormat(44100, 16, 1, true, false);
+    
+    private engine.audio.Sound music;
+    
 	// Main thread
 	private Thread thread;
 	private boolean isRunning;
@@ -95,10 +106,13 @@ public class Game extends Canvas implements Runnable {
 
 			// Update the game
 			sandbox.run();
-
-			// Draw the graphics
+			
+			// Render the graphics
 			graphicsManager.run();
-
+			
+			//soundManager.play(music,null,true);
+			
+			UniversalKeys.get().update();
 			try {
 				// System.out.println("Sleep time:"
 				// + ((lastLoopTime - System.nanoTime()) / 1000000 + 10));
@@ -114,10 +128,13 @@ public class Game extends Canvas implements Runnable {
 	 * Starts the resourceManager and the graphicsManager.
 	 */
 	public void startGameComponents() {
-		resourceManager = ResourceManager.getInstance();
-		ResourceManager.getInstance().initialize(this);
+		resourceManager = ResourceManager.get();
+		ResourceManager.get().initialize(this);
 		graphicsManager = GraphicsManager.get();
 		GraphicsManager.get().initialize(this);
+		soundManager = SoundManager.get();
+		SoundManager.get().init();
+		music = soundManager.getSound("music1.wav");
 	}
 
 	/**
@@ -149,7 +166,7 @@ public class Game extends Canvas implements Runnable {
 	/**
 	 * Exits the program
 	 */
-	public void gameExit() {
+	public static void exit() {
 		WindowEvent wev = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
 		Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
 	}

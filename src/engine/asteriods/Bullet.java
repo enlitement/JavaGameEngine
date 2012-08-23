@@ -61,7 +61,6 @@ public class Bullet extends GameObject implements Paintable, Movable,
 	public void onCollision(GameObject obj2) {
 		if (obj2.name == "Asteroid") {
 			dead = true;
-			System.out.println("Asteriod!");
 		}
 	}
 }

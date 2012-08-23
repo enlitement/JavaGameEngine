@@ -158,7 +158,7 @@ public abstract class Button extends GameObject implements Paintable {
 			revertClickEffect();
 	}
 
-	public void changeOutlineColor(Color color) {
+	public void setOutlineColor(Color color) {
 		this.outline = color;
 	}
 	/**

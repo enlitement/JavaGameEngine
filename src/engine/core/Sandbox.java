@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 
 import engine.core.graphics.GraphicsManager;
 import engine.core.resources.ResourceManager;
@@ -16,15 +16,14 @@ public abstract class Sandbox {
 
 	private Game game;
 	private List<GameObject> objectList;
-	private Stack<Room> roomList;
+	private LinkedList<Room> roomList;
 	public int currentRoom;
 	private CollisionManager collisionManager;
 
 	public Sandbox() {
 		super();
 		objectList = new ArrayList<GameObject>();
-		setRoomList(new Stack<Room>());
-		currentRoom = 0;
+		roomList = new LinkedList<Room>();
 		createEngine();
 	}
 
@@ -38,11 +37,11 @@ public abstract class Sandbox {
 	public abstract void run();
 
 	public void addImage(String imageName) {
-		ResourceManager.getInstance().addImage(imageName);
+		ResourceManager.get().addImage(imageName);
 	}
 
 	public Image getImage(String imageName) {
-		return ResourceManager.getInstance().getImage(imageName);
+		return ResourceManager.get().getImage(imageName);
 	}
 
 	/**
@@ -53,7 +52,7 @@ public abstract class Sandbox {
 	}
 
 	public void addRoom(Room room) {
-		getRoomList().add(room);
+		getRoomList().addFirst(room);
 	}
 
 	public void removeRoom(Room room) {
@@ -69,18 +68,31 @@ public abstract class Sandbox {
 	}
 
 	public Room getCurrentRoom() {
-		//System.out.println("Current room:"+getRoomList().get(currentRoom).getClass());
-		return getRoomList().get(currentRoom);
+		return getRoomList().peekFirst();
 	}
 	
 	public List<GameObject> getCurrentRoomCollidables() {
 		return getCurrentRoom().getCollidables();
 	}
+	
+	public void updateCollisionManager() {
+		collisionManager.updateSprites();
+	}
+	
+	public void updateAllRooms() {
+		for (int i = getRoomList().size() - 1; i >= 0; i--) 
+			roomList.get(i).update();
+	}
+	
+	public void updateCurrentRoom() {
+		roomList.peek().update();
+	}
+	
 	public void createNewRoom(Room room) {
-		getRoomList().add(room);
+		getRoomList().push(room);
 	}
 
-	public void nextRoom() {
+/*	public void nextRoom() {
 		int nextRoom = currentRoom + 1;
 		if (nextRoom < getRoomList().size()
 				&& getRoomList().get(nextRoom) != null) {
@@ -98,14 +110,10 @@ public abstract class Sandbox {
 		if (room >= 0 && room < getRoomList().size()
 				&& getRoomList().get(room) != null)
 			currentRoom = room;
-	}
+	}*/
 
-	public Stack<Room> getRoomList() {
+	public LinkedList<Room> getRoomList() {
 		return roomList;
-	}
-
-	public void setRoomList(Stack<Room> roomList) {
-		this.roomList = roomList;
 	}
 
 	public CollisionManager getCollisionManager() {
@@ -129,7 +137,7 @@ public abstract class Sandbox {
 	}
 
 	public void exitGame() {
-		game.gameExit();
+		Game.exit();
 	}
 
 	public void setTitle(String title) {
