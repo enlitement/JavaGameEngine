@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="unused/|test/gameStates/|test/core/resources/AudioBank.java|test/testDrive/|brooklynbridge/|beginning/|engine/asteriods/|engine/gui/StateEvent.java|engine/gui/StateListener.java|engine/gui/Observer.java|engine/gui/ClickListener.java|engine/gui/EventDispatcher.java|engine/sprites/|engine/test/|engine/map/|engine/gui/AbstractButton2.java|engine/gui/AbstractGUI.java|engine/gui/Button2.java|engine/gui/Button3.java|engine/gui/GameGUI.java|engine/gui/GradientButton.java|engine/gui/GradientButton2.java|engine/gui/ImageButton.java|engine/editor/|engine/ai/|engine/utilities/JSONReader.java|engine/interfaces/Draggable.java|engine/gui/GUIObject.java|cardImages/|frogger/animation/ai/|frogger/animation/asteriods/|frogger/animation/editor/|frogger/animation/map/|frogger/animation/sprites/|frogger/animation/test/|frogger/animation/test/gui/|engine/interfaces/Openable.java|engine/gui/Arrangement.java|engine/gui/MenuColumnArrangement.java|engine/gui/Holder.java|engine/tests/AudioMixer.java" kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
